@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Custom Animations for Crystal Game */
+
+/* Shake animation for invalid swaps */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+/* Pulse animation for matched crystals */
+@keyframes pulse-match {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+/* Pop-in animation for new crystals */
+@keyframes pop-in {
+  0% { transform: scale(0) translateY(-20px); opacity: 0; }
+  50% { transform: scale(1.2) translateY(0); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Fade out and scale down for disappearing crystals */
+@keyframes disappear {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0); opacity: 0; }
+}
+
+/* Falling animation for crystals */
+@keyframes fall {
+  0% { transform: translateY(-100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Scale in animation for modal */
+@keyframes scale-in {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Floating text animation for combo counter */
+@keyframes float-up {
+  0% {
+    transform: translateY(0) scale(0.5);
+    opacity: 0;
+  }
+  20% {
+    transform: translateY(-20px) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-80px) scale(1);
+    opacity: 0;
+  }
+}
+
+/* Combo burst animation */
+@keyframes combo-burst {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Utility animation classes */
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.animate-pulse-match {
+  animation: pulse-match 0.4s ease-in-out 2;
+}
+
+.animate-pop-in {
+  animation: pop-in 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-disappear {
+  animation: disappear 0.3s ease-out forwards;
+}
+
+.animate-fall {
+  animation: fall 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-float-up {
+  animation: float-up 1.5s ease-out forwards;
+}
+
+.animate-combo-burst {
+  animation: combo-burst 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
