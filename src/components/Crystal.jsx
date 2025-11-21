@@ -7,7 +7,8 @@ const Crystal = ({
   isProcessing,
   isMatching,
   isNew,
-  shouldShake
+  shouldShake,
+  isHint
 }) => {
   const bgColor = COLORS[color] || '#666';
 
@@ -23,6 +24,7 @@ const Crystal = ({
         ${isMatching ? 'animate-pulse-match' : ''}
         ${isNew ? 'animate-pop-in' : ''}
         ${shouldShake ? 'animate-shake' : ''}
+        ${isHint ? 'ring-4 ring-yellow-400 ring-opacity-100 animate-pulse' : ''}
         shadow-lg hover:shadow-xl
         active:scale-95
       `}

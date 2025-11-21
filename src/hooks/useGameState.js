@@ -1,10 +1,17 @@
 import { useState, useCallback, useEffect } from 'react';
 import { generateLevel } from '../utils/levelGenerator';
 import { findMatches, getMatchedColors, removeMatches } from '../utils/matchDetector';
-import { processCascades } from '../utils/gravity';
+import { processCascades, findHint } from '../utils/gravity';
 import { swapCells, areAdjacent } from '../utils/gridHelpers';
+import {
+  getCurrentLevel,
+  saveCurrentLevel,
+  saveLevelHighScore,
+  incrementTotalCompleted,
+  isStorageAvailable,
+} from '../utils/storage';
 
-export const useGameState = (initialLevel = 1) => {
+export const useGameState = (initialLevel = null) => {
   const [level, setLevel] = useState(null);
   const [grid, setGrid] = useState([]);
   const [selectedCell, setSelectedCell] = useState(null);
@@ -21,6 +28,10 @@ export const useGameState = (initialLevel = 1) => {
   // Combo tracking
   const [currentCombo, setCurrentCombo] = useState(0);
   const [lastCascadeCount, setLastCascadeCount] = useState(0);
+
+  // Hint system
+  const [hintCells, setHintCells] = useState(null);
+  const [hintsRemaining, setHintsRemaining] = useState(3);
 
   // Initialize or load a level
   const loadLevel = useCallback((levelNumber) => {
@@ -45,9 +56,13 @@ export const useGameState = (initialLevel = 1) => {
     }
   }, []);
 
-  // Load initial level on mount
+  // Load initial level on mount (from storage or initialLevel)
   useEffect(() => {
-    loadLevel(initialLevel);
+    const levelToLoad = initialLevel !== null
+      ? initialLevel
+      : (isStorageAvailable() ? getCurrentLevel() : 1);
+
+    loadLevel(levelToLoad);
   }, [initialLevel, loadLevel]);
 
   // Check if goal is complete
@@ -198,14 +213,41 @@ export const useGameState = (initialLevel = 1) => {
   // Advance to next level
   const nextLevel = useCallback(() => {
     if (!level) return;
-    loadLevel(level.levelNumber + 1);
-  }, [level, loadLevel]);
+
+    const nextLevelNumber = level.levelNumber + 1;
+
+    // Save progress
+    if (isStorageAvailable()) {
+      saveCurrentLevel(nextLevelNumber);
+      saveLevelHighScore(level.levelNumber, moveCount);
+      incrementTotalCompleted();
+    }
+
+    loadLevel(nextLevelNumber);
+  }, [level, loadLevel, moveCount]);
 
   // Restart current level
   const restartLevel = useCallback(() => {
     if (!level) return;
+    setHintsRemaining(3); // Reset hints
     loadLevel(level.levelNumber);
   }, [level, loadLevel]);
+
+  // Show hint
+  const showHint = useCallback(() => {
+    if (hintsRemaining <= 0 || isProcessing) return;
+
+    const hint = findHint(grid);
+    if (hint) {
+      setHintCells(hint);
+      setHintsRemaining(prev => prev - 1);
+
+      // Clear hint after 3 seconds
+      setTimeout(() => {
+        setHintCells(null);
+      }, 3000);
+    }
+  }, [grid, hintsRemaining, isProcessing]);
 
   return {
     level,
@@ -225,5 +267,9 @@ export const useGameState = (initialLevel = 1) => {
     // Combo states
     currentCombo,
     lastCascadeCount,
+    // Hint states
+    hintCells,
+    hintsRemaining,
+    showHint,
   };
 };

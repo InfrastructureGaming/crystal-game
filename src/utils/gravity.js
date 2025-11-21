@@ -159,3 +159,52 @@ export const ensureValidGrid = (grid, availableColors, maxAttempts = 10) => {
 
   return currentGrid;
 };
+
+/**
+ * Finds a hint - returns a valid move that would create a match
+ * Returns { pos1: {row, col}, pos2: {row, col} } or null if no moves
+ */
+export const findHint = (grid) => {
+  const size = grid.length;
+
+  // Try every possible swap
+  for (let row = 0; row < size; row++) {
+    for (let col = 0; col < size; col++) {
+      // Try swapping with the cell to the right
+      if (col < size - 1) {
+        const testGrid = grid.map(r => [...r]);
+        // Swap
+        const temp = testGrid[row][col];
+        testGrid[row][col] = testGrid[row][col + 1];
+        testGrid[row][col + 1] = temp;
+
+        // Check if this creates a match
+        if (findMatches(testGrid).length > 0) {
+          return {
+            pos1: { row, col },
+            pos2: { row, col: col + 1 },
+          };
+        }
+      }
+
+      // Try swapping with the cell below
+      if (row < size - 1) {
+        const testGrid = grid.map(r => [...r]);
+        // Swap
+        const temp = testGrid[row][col];
+        testGrid[row][col] = testGrid[row + 1][col];
+        testGrid[row + 1][col] = temp;
+
+        // Check if this creates a match
+        if (findMatches(testGrid).length > 0) {
+          return {
+            pos1: { row, col },
+            pos2: { row: row + 1, col },
+          };
+        }
+      }
+    }
+  }
+
+  return null; // No valid moves found
+};

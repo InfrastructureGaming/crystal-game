@@ -7,7 +7,8 @@ const Grid = ({
   isProcessing,
   invalidSwap,
   matchingCells,
-  newCells
+  newCells,
+  hintCells
 }) => {
   if (!grid || grid.length === 0) {
     return (
@@ -58,6 +59,12 @@ const Grid = ({
               (invalidSwap.pos2.row === rowIndex && invalidSwap.pos2.col === colIndex)
             );
 
+            // Check if this cell is a hint
+            const isHint = hintCells && (
+              (hintCells.pos1.row === rowIndex && hintCells.pos1.col === colIndex) ||
+              (hintCells.pos2.row === rowIndex && hintCells.pos2.col === colIndex)
+            );
+
             return (
               <div
                 key={`${rowIndex}-${colIndex}`}
@@ -71,6 +78,7 @@ const Grid = ({
                   isMatching={isMatching}
                   isNew={isNew}
                   shouldShake={shouldShake}
+                  isHint={isHint}
                 />
               </div>
             );
