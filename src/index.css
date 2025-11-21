@@ -122,6 +122,38 @@ body {
   }
 }
 
+/* EPIC particle burst with rotation and scaling */
+@keyframes particle-burst-epic {
+  0% {
+    transform: translate(-50%, -50%) scale(0) rotate(0deg);
+    opacity: 1;
+  }
+  10% {
+    transform: translate(-50%, -50%) scale(1.5) rotate(45deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.3) rotate(var(--rotation));
+    opacity: 0;
+  }
+}
+
+/* Star shape using clip-path */
+.star-shape {
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+}
+
 @keyframes confetti-fall {
   0% {
     transform: translateY(0) rotateZ(0deg);
@@ -131,4 +163,120 @@ body {
     transform: translateY(100vh) rotateZ(720deg);
     opacity: 0;
   }
+}
+
+/* Pulsing glow animation for completed progress bars */
+@keyframes pulse-glow {
+  0%, 100% {
+    filter: brightness(1) drop-shadow(0 0 4px currentColor);
+  }
+  50% {
+    filter: brightness(1.3) drop-shadow(0 0 12px currentColor);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 1.5s ease-in-out infinite;
+}
+
+/* Score popup animation */
+@keyframes score-popup {
+  0% {
+    transform: translateY(0) scale(0.5);
+    opacity: 0;
+  }
+  20% {
+    transform: translateY(-20px) scale(1.3);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) scale(1);
+    opacity: 0;
+  }
+}
+
+.animate-score-popup {
+  animation: score-popup 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Toast notification animation */
+@keyframes toast-in {
+  0% {
+    transform: translate(-50%, -100px) scale(0.8);
+    opacity: 0;
+  }
+  20% {
+    transform: translate(-50%, 0) scale(1.1);
+    opacity: 1;
+  }
+  80% {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -20px) scale(0.9);
+    opacity: 0;
+  }
+}
+
+.animate-toast-in {
+  animation: toast-in 2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Achievement notification animations */
+@keyframes achievement-popup {
+  0% {
+    transform: scale(0) rotate(-10deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1) rotate(5deg);
+  }
+  70% {
+    transform: scale(0.95) rotate(-2deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.animate-achievement-popup {
+  animation: achievement-popup 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  75% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+.animate-spin-slow-reverse {
+  animation: spin-slow 8s linear infinite reverse;
 }

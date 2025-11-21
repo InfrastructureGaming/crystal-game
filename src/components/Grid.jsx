@@ -1,6 +1,7 @@
+import { forwardRef } from 'react';
 import Crystal from './Crystal';
 
-const Grid = ({
+const Grid = forwardRef(({
   grid,
   selectedCell,
   onCellClick,
@@ -9,7 +10,7 @@ const Grid = ({
   matchingCells,
   newCells,
   hintCells
-}) => {
+}, ref) => {
   if (!grid || grid.length === 0) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -33,6 +34,7 @@ const Grid = ({
   return (
     <div className="flex flex-col items-center justify-center gap-2 p-4">
       <div
+        ref={ref}
         className="inline-grid gap-2 bg-white/5 p-4 rounded-2xl backdrop-blur-sm"
         style={{
           gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))`,
@@ -87,6 +89,8 @@ const Grid = ({
       </div>
     </div>
   );
-};
+});
+
+Grid.displayName = 'Grid';
 
 export default Grid;

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { generateLevel } from '../utils/levelGenerator';
 import { findMatches, getMatchedColors, removeMatches } from '../utils/matchDetector';
 import { processCascades, findHint } from '../utils/gravity';
@@ -10,6 +10,7 @@ import {
   incrementTotalCompleted,
   isStorageAvailable,
 } from '../utils/storage';
+import { updateStats, getStats } from '../utils/achievements';
 
 export const useGameState = (initialLevel = null) => {
   const [level, setLevel] = useState(null);
@@ -32,6 +33,36 @@ export const useGameState = (initialLevel = null) => {
   // Hint system
   const [hintCells, setHintCells] = useState(null);
   const [hintsRemaining, setHintsRemaining] = useState(3);
+
+  // Toast notifications
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastTrigger, setToastTrigger] = useState(0);
+
+  // Achievement system
+  const [currentAchievement, setCurrentAchievement] = useState(null);
+  const achievementQueueRef = useRef([]);
+
+  // Display next achievement from queue
+  const showNextAchievement = useCallback(() => {
+    if (achievementQueueRef.current.length > 0 && !currentAchievement) {
+      const next = achievementQueueRef.current.shift();
+      setCurrentAchievement(next);
+      setTimeout(() => {
+        setCurrentAchievement(null);
+        // Show next achievement after delay
+        setTimeout(showNextAchievement, 500);
+      }, 4000);
+    }
+  }, [currentAchievement]);
+
+  // Check and queue achievements
+  const checkAndQueueAchievements = useCallback((updates) => {
+    const newAchievements = updateStats(updates);
+    if (newAchievements.length > 0) {
+      achievementQueueRef.current.push(...newAchievements);
+      showNextAchievement();
+    }
+  }, [showNextAchievement]);
 
   // Initialize or load a level
   const loadLevel = useCallback((levelNumber) => {
@@ -183,6 +214,27 @@ export const useGameState = (initialLevel = null) => {
       setLastCascadeCount(cascadeCount);
       setCurrentCombo(prev => prev + 1);
 
+      // Update achievement stats
+      checkAndQueueAchievements({
+        cascade: cascadeCount,
+        matchSize: matches.length,
+      });
+
+      // Show toast for special achievements
+      if (cascadeCount >= 5) {
+        setToastMessage('🌟 AMAZING CASCADE! 🌟');
+        setToastTrigger(prev => prev + 1);
+      } else if (cascadeCount >= 3) {
+        setToastMessage('🔥 SUPER CASCADE! 🔥');
+        setToastTrigger(prev => prev + 1);
+      } else if (matches.length >= 5) {
+        setToastMessage('💎 HUGE MATCH! 💎');
+        setToastTrigger(prev => prev + 1);
+      } else if (matches.length === 4) {
+        setToastMessage('✨ GREAT MATCH! ✨');
+        setToastTrigger(prev => prev + 1);
+      }
+
       // Track which cells are new for pop-in animation
       const newCellsPositions = [];
       for (let row = 0; row < finalGrid.length; row++) {
@@ -223,8 +275,16 @@ export const useGameState = (initialLevel = null) => {
       incrementTotalCompleted();
     }
 
+    // Update achievement stats for level completion
+    const stats = getStats();
+    checkAndQueueAchievements({
+      totalCompleted: (stats.totalCompleted || 0) + 1,
+      currentLevel: nextLevelNumber,
+      moves: moveCount,
+    });
+
     loadLevel(nextLevelNumber);
-  }, [level, loadLevel, moveCount]);
+  }, [level, loadLevel, moveCount, checkAndQueueAchievements]);
 
   // Restart current level
   const restartLevel = useCallback(() => {
@@ -271,5 +331,10 @@ export const useGameState = (initialLevel = null) => {
     hintCells,
     hintsRemaining,
     showHint,
+    // Toast states
+    toastMessage,
+    toastTrigger,
+    // Achievement states
+    currentAchievement,
   };
 };

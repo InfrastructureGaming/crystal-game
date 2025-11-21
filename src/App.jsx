@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useGameState } from './hooks/useGameState';
 import Header from './components/Header';
 import LevelGoal from './components/LevelGoal';
@@ -8,9 +8,12 @@ import ComboDisplay from './components/ComboDisplay';
 import WelcomeBack from './components/WelcomeBack';
 import Particles from './components/Particles';
 import Confetti from './components/Confetti';
+import ToastNotification from './components/ToastNotification';
+import AchievementNotification from './components/AchievementNotification';
 import { getCurrentLevel, isStorageAvailable, clearGameData } from './utils/storage';
 
 function App() {
+  const gridRef = useRef(null);
   const [showWelcome, setShowWelcome] = useState(false);
   const [savedLevel, setSavedLevel] = useState(null);
   const [startLevel, setStartLevel] = useState(null);
@@ -62,6 +65,9 @@ function App() {
     hintCells,
     hintsRemaining,
     showHint,
+    toastMessage,
+    toastTrigger,
+    currentAchievement,
   } = useGameState(startLevel);
 
   return (
@@ -80,6 +86,7 @@ function App() {
           {/* Grid */}
           <div className="flex-1 flex justify-center">
             <Grid
+              ref={gridRef}
               grid={grid}
               selectedCell={selectedCell}
               onCellClick={handleCellClick}
@@ -119,7 +126,7 @@ function App() {
       </div>
 
       {/* Particles */}
-      <Particles matches={matchingCells} colors={grid} />
+      <Particles matches={matchingCells} grid={grid} gridRef={gridRef} />
 
       {/* Combo Display */}
       <ComboDisplay
@@ -129,6 +136,12 @@ function App() {
 
       {/* Confetti */}
       <Confetti trigger={isLevelComplete} />
+
+      {/* Toast Notifications */}
+      <ToastNotification message={toastMessage} trigger={toastTrigger} />
+
+      {/* Achievement Notifications */}
+      <AchievementNotification achievement={currentAchievement} />
 
       {/* Welcome Back Modal */}
       {showWelcome && savedLevel && (

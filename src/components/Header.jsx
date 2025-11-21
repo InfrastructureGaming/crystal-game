@@ -1,4 +1,17 @@
+import { useState, useEffect } from 'react';
+
 const Header = ({ level, moveCount }) => {
+  const [prevMoveCount, setPrevMoveCount] = useState(0);
+  const [animateMoves, setAnimateMoves] = useState(false);
+
+  useEffect(() => {
+    if (moveCount > prevMoveCount) {
+      setAnimateMoves(true);
+      setTimeout(() => setAnimateMoves(false), 300);
+    }
+    setPrevMoveCount(moveCount);
+  }, [moveCount, prevMoveCount]);
+
   if (!level) return null;
 
   const { levelNumber, tier, moveLimit } = level;
@@ -16,20 +29,20 @@ const Header = ({ level, moveCount }) => {
         </div>
 
         {moveLimit !== null && (
-          <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
+          <div className={`bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg transition-all ${animateMoves ? 'scale-110 bg-white/20' : ''}`}>
             <p className="text-sm font-semibold text-purple-200">Moves</p>
-            <p className={`text-2xl font-bold ${
-              moveCount > moveLimit ? 'text-red-400' : 'text-white'
-            }`}>
+            <p className={`text-2xl font-bold transition-all ${
+              moveCount > moveLimit ? 'text-red-400 animate-pulse' : 'text-white'
+            } ${animateMoves ? 'scale-125' : ''}`}>
               {moveCount} / {moveLimit}
             </p>
           </div>
         )}
 
         {moveLimit === null && (
-          <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
+          <div className={`bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg transition-all ${animateMoves ? 'scale-110 bg-white/20' : ''}`}>
             <p className="text-sm font-semibold text-purple-200">Moves</p>
-            <p className="text-2xl font-bold">{moveCount}</p>
+            <p className={`text-2xl font-bold transition-all ${animateMoves ? 'scale-125' : ''}`}>{moveCount}</p>
           </div>
         )}
 
